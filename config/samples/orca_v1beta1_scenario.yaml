@@ -1,0 +1,12 @@
+apiVersion: orca.paermini.com/v1beta1
+kind: Scenario
+metadata:
+  labels:
+    app.kubernetes.io/name: scenario
+    app.kubernetes.io/instance: scenario-sample
+    app.kubernetes.io/part-of: orca-scenario
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: orca-scenario
+  name: scenario-sample
+spec:
+  # TODO(user): Add fields here
