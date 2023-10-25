@@ -53,26 +53,31 @@ spec:
                               type: integer
                             assetUpdateRatePerSecond:
                               type: integer
+                            changeRateMs:
+                              type: integer
                             dockerImage:
                               properties:
+                                imageName:
+                                  type: string
                                 prefix:
                                   type: string
                                 tag:
                                   type: string
                               required:
+                              - imageName
                               - prefix
                               - tag
                               type: object
-                            namePrefix:
+                            logLevel:
                               type: string
-                            publishingIntervalMs:
+                            opcuaServerLogLevel:
+                              type: string
+                            samplingInterval:
                               type: integer
                             serverCount:
                               type: integer
                             tagCount:
                               type: integer
-                          required:
-                          - namePrefix
                           type: object
                         type: array
                     type: object

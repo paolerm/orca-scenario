@@ -26,13 +26,16 @@ type Cluster struct {
 }
 
 type OpcuaOverrides struct {
-	NamePrefix               string                  `json:"namePrefix"`
 	ServerCount              int                     `json:"serverCount,omitempty"`
 	AssetPerServer           int                     `json:"assetPerServer,omitempty"`
 	TagCount                 int                     `json:"tagCount,omitempty"`
 	AssetUpdateRatePerSecond int                     `json:"assetUpdateRatePerSecond,omitempty"`
-	PublishingIntervalMs     int                     `json:"publishingIntervalMs,omitempty"`
+	ChangeRateMs 			 int 					 `json:"changeRateMs,omitempty"`
+	SamplingIntervalMs 		 int 					 `json:"samplingInterval,omitempty"`
 	DockerImage              opcuaserver.DockerImage `json:"dockerImage,omitempty"`
+	LogLevel 				 string 				 `json:"logLevel,omitempty"`
+	OpcuaServerLogLevel 	 string 				 `json:"opcuaServerLogLevel,omitempty"`
+
 }
 
 type ScenarioOvverides struct {
