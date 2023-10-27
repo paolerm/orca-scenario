@@ -55,31 +55,26 @@ spec:
                               type: integer
                             changeRateMs:
                               type: integer
-                            dockerImage:
-                              properties:
-                                imageName:
-                                  type: string
-                                prefix:
-                                  type: string
-                                tag:
-                                  type: string
-                              required:
-                              - imageName
-                              - prefix
-                              - tag
-                              type: object
+                            dockerImageId:
+                              type: string
+                            id:
+                              type: string
                             logLevel:
                               type: string
                             opcuaServerLogLevel:
                               type: string
-                            samplingInterval:
+                            samplingIntervalMs:
                               type: integer
                             serverCount:
                               type: integer
                             tagCount:
                               type: integer
+                          required:
+                          - id
                           type: object
                         type: array
+                    required:
+                    - opcuaOverrides
                     type: object
                   templateId:
                     type: string
@@ -92,6 +87,15 @@ spec:
             type: object
           status:
             description: ScenarioStatus defines the observed state of Scenario
+            properties:
+              mqttClientCr:
+                items:
+                  type: string
+                type: array
+              opcuaServerCr:
+                items:
+                  type: string
+                type: array
             type: object
         type: object
     served: true

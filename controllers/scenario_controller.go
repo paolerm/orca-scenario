@@ -46,6 +46,8 @@ const scenarioTemplateNamespace = "scenario-template-catalog"
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=scenarios,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=scenarios/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=scenarios/finalizers,verbs=update
+//+kubebuilder:rbac:groups=orca.paermini.com,resources=scenariotemplates,verbs=get;list;watch
+//+kubebuilder:rbac:groups=orca.paermini.com,resources=scenariotemplates/status,verbs=get
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=mqttclients,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=mqttclients/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=orca.paermini.com,resources=opcuaservers,verbs=get;list;watch;create;update;patch;delete
@@ -101,9 +103,13 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, err
 	}
 
+	scenario.Status.OpcuaServerCr = []string{}
+	scenario.Status.MqttClientCr = []string{}
+
 	for i := 0; i < len(scenarioTemplate.Spec.OpcuaSiteSpec); i++ {
 		opcuaSpec := scenarioTemplate.Spec.OpcuaSiteSpec[i]
-		opcuaName := scenario.Spec.Cluster.Id + "-" + scenario.Spec.ScenarioDefinition.TemplateId + "-" + opcuaSpec.NamePrefix
+		opcuaName := scenario.Spec.Cluster.Id + "-" + scenario.Spec.ScenarioDefinition.TemplateId + "-" + opcuaSpec.Id
+		opcuaSpec.Id = opcuaName
 		opcuaNamespace := req.NamespacedName.Namespace
 
 		opcuaNamepsacedName := types.NamespacedName{
@@ -111,11 +117,14 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			Namespace: opcuaNamespace,
 		}
 
-		// // apply overrides
-		// overrideIndex := -1
-		// if scenario.Spec.Scenario.Overrides.OpcuaOverrides != nil {
-		// 	overrideIndex = Contains(scenario.Spec.Scenario.Overrides.OpcuaOverrides, opcuaName)
-		// }
+		// apply overrides
+		overrideIndex := -1
+		if scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides != nil {
+			overrideIndex = Contains(scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides, opcuaName)
+			if overrideIndex > -1 {
+				opcuaSpec = ApplyOpcuaOverrides(opcuaSpec, scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides[overrideIndex])
+			}
+		}
 
 		logger.Info("Getting opcua-server CR under namespace " + opcuaNamespace + " and name " + opcuaName + "...")
 		existingOpcuaServer := &opcuaserver.OpcuaServer{}
@@ -132,13 +141,13 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 					},
 				},
 				Spec: opcuaserver.OpcuaServerSpec{
-					NamePrefix:               opcuaName,
+					Id:                       opcuaName,
 					ServerCount:              opcuaSpec.ServerCount,
 					AssetPerServer:           opcuaSpec.AssetPerServer,
 					TagCount:                 opcuaSpec.TagCount,
 					AssetUpdateRatePerSecond: opcuaSpec.AssetUpdateRatePerSecond,
-					PublishingIntervalMs:     opcuaSpec.PublishingIntervalMs,
-					// TODO: DockerImage: opcuaSpec.DockerImage,
+					SamplingIntervalMs:       opcuaSpec.SamplingIntervalMs,
+					DockerImageId:            opcuaSpec.DockerImageId,
 				},
 			}
 
@@ -150,15 +159,7 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		} else {
 			logger.Info("Updating opcua-server CR under namespace " + opcuaNamespace + " and name " + opcuaName + "...")
 
-			existingOpcuaServer.Spec = opcuaserver.OpcuaServerSpec{
-				NamePrefix:               opcuaName,
-				ServerCount:              opcuaSpec.ServerCount,
-				AssetPerServer:           opcuaSpec.AssetPerServer,
-				TagCount:                 opcuaSpec.TagCount,
-				AssetUpdateRatePerSecond: opcuaSpec.AssetUpdateRatePerSecond,
-				PublishingIntervalMs:     opcuaSpec.PublishingIntervalMs,
-				// TODO: DockerImage: opcuaSpec.DockerImage,
-			}
+			existingOpcuaServer.Spec = opcuaSpec
 
 			err := r.Update(ctx, existingOpcuaServer)
 			if err != nil {
@@ -166,11 +167,13 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 				return ctrl.Result{}, err
 			}
 		}
+
+		scenario.Status.OpcuaServerCr = append(scenario.Status.OpcuaServerCr, opcuaName)
 	}
 
 	for i := 0; i < len(scenarioTemplate.Spec.MqttClientSiteSpec); i++ {
 		mqttClientSpec := scenarioTemplate.Spec.MqttClientSiteSpec[i]
-		mqttClientName := scenario.Spec.Cluster.Id + "-" + scenario.Spec.ScenarioDefinition.TemplateId + "-" + mqttClientSpec.NamePrefix
+		mqttClientName := scenario.Spec.Cluster.Id + "-" + scenario.Spec.ScenarioDefinition.TemplateId + "-" + mqttClientSpec.Id
 		mqttClientNamespace := req.NamespacedName.Namespace
 
 		mqttClientNamepsacedName := types.NamespacedName{
@@ -195,8 +198,7 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 					},
 				},
 				Spec: mqttclient.MqttClientSpec{
-					NamePrefix:    mqttClientName,
-					TargetType:    mqttClientSpec.TargetType,
+					Id:            mqttClientName,
 					Protocol:      mqttClientSpec.Protocol,
 					ClientConfigs: mqttClientSpec.ClientConfigs,
 				},
@@ -211,8 +213,7 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			logger.Info("Updating MQTT client CR under namespace " + mqttClientNamespace + " and name " + mqttClientName + "...")
 
 			existingMqttClient.Spec = mqttclient.MqttClientSpec{
-				NamePrefix:    mqttClientName,
-				TargetType:    mqttClientSpec.TargetType,
+				Id:            mqttClientName,
 				Protocol:      mqttClientSpec.Protocol,
 				ClientConfigs: mqttClientSpec.ClientConfigs,
 			}
@@ -223,9 +224,18 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 				return ctrl.Result{}, err
 			}
 		}
+
+		scenario.Status.MqttClientCr = append(scenario.Status.MqttClientCr, mqttClientName)
 	}
 
 	// TODO: remove extra
+
+	// update status field
+	err = r.Status().Update(ctx, scenario)
+	if err != nil {
+		logger.Error(err, "Failed to update CR!")
+		return ctrl.Result{}, err
+	}
 
 	// Add finalizer for this CR
 	if !controllerutil.ContainsFinalizer(scenario, scenarioFinalizer) {
@@ -298,9 +308,45 @@ func (r *ScenarioReconciler) finalizeScenario(ctx context.Context, req ctrl.Requ
 
 func Contains(s []orcav1beta1.OpcuaOverrides, name string) int {
 	for i, a := range s {
-		if a.NamePrefix == name {
+		if a.Id == name {
 			return i
 		}
 	}
 	return -1
+}
+
+func ApplyOpcuaOverrides(spec opcuaserver.OpcuaServerSpec, overrides orcav1beta1.OpcuaOverrides) opcuaserver.OpcuaServerSpec {
+	result := spec
+
+	// TODO: use reflection instead?
+
+	if overrides.ServerCount != 0 {
+		result.ServerCount = overrides.ServerCount
+	}
+	if overrides.AssetPerServer != 0 {
+		result.AssetPerServer = overrides.AssetPerServer
+	}
+	if overrides.TagCount != 0 {
+		result.TagCount = overrides.TagCount
+	}
+	if overrides.AssetUpdateRatePerSecond != 0 {
+		result.AssetUpdateRatePerSecond = overrides.AssetUpdateRatePerSecond
+	}
+	if overrides.ChangeRateMs != 0 {
+		result.ChangeRateMs = overrides.ChangeRateMs
+	}
+	if overrides.SamplingIntervalMs != 0 {
+		result.SamplingIntervalMs = overrides.SamplingIntervalMs
+	}
+	if overrides.DockerImageId != "" {
+		result.DockerImageId = overrides.DockerImageId
+	}
+	if overrides.LogLevel != "" {
+		result.LogLevel = overrides.LogLevel
+	}
+	if overrides.OpcuaServerLogLevel != "" {
+		result.OpcuaServerLogLevel = overrides.OpcuaServerLogLevel
+	}
+
+	return result
 }

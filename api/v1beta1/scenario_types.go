@@ -17,7 +17,6 @@ limitations under the License.
 package v1beta1
 
 import (
-	opcuaserver "github.com/paolerm/orca-opcua-server/api/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -26,20 +25,20 @@ type Cluster struct {
 }
 
 type OpcuaOverrides struct {
-	ServerCount              int                     `json:"serverCount,omitempty"`
-	AssetPerServer           int                     `json:"assetPerServer,omitempty"`
-	TagCount                 int                     `json:"tagCount,omitempty"`
-	AssetUpdateRatePerSecond int                     `json:"assetUpdateRatePerSecond,omitempty"`
-	ChangeRateMs 			 int 					 `json:"changeRateMs,omitempty"`
-	SamplingIntervalMs 		 int 					 `json:"samplingInterval,omitempty"`
-	DockerImage              opcuaserver.DockerImage `json:"dockerImage,omitempty"`
-	LogLevel 				 string 				 `json:"logLevel,omitempty"`
-	OpcuaServerLogLevel 	 string 				 `json:"opcuaServerLogLevel,omitempty"`
-
+	Id                       string `json:"id"`
+	ServerCount              int    `json:"serverCount,omitempty"`
+	AssetPerServer           int    `json:"assetPerServer,omitempty"`
+	TagCount                 int    `json:"tagCount,omitempty"`
+	AssetUpdateRatePerSecond int    `json:"assetUpdateRatePerSecond,omitempty"`
+	ChangeRateMs             int    `json:"changeRateMs,omitempty"`
+	SamplingIntervalMs       int    `json:"samplingIntervalMs,omitempty"`
+	DockerImageId            string `json:"dockerImageId,omitempty"`
+	LogLevel                 string `json:"logLevel,omitempty"`
+	OpcuaServerLogLevel      string `json:"opcuaServerLogLevel,omitempty"`
 }
 
 type ScenarioOvverides struct {
-	OpcuaOverrides []OpcuaOverrides `json:"opcuaOverrides,omitempty"`
+	OpcuaOverrides []OpcuaOverrides `json:"opcuaOverrides"`
 }
 
 type ScenarioDefinition struct {
@@ -55,9 +54,12 @@ type ScenarioSpec struct {
 
 // ScenarioStatus defines the observed state of Scenario
 type ScenarioStatus struct {
-	// TODO: current scenario running
+	OpcuaServerCr []string `json:"opcuaServerCr,omitempty"`
+	MqttClientCr  []string `json:"mqttClientCr,omitempty"`
 
 	// TODO: public IP addresses for each OPCUA
+
+	// TODO: MQTT Client IP
 }
 
 //+kubebuilder:object:root=true

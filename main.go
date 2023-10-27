@@ -31,6 +31,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
+	mqttclient "github.com/paolerm/orca-mqtt-client/api/v1beta1"
+	opcuaserver "github.com/paolerm/orca-opcua-server/api/v1beta1"
+	scenariotemplate "github.com/paolerm/orca-scenario-template/api/v1beta1"
+
 	orcav1beta1 "github.com/paolerm/orca-scenario/api/v1beta1"
 	"github.com/paolerm/orca-scenario/controllers"
 	//+kubebuilder:scaffold:imports
@@ -43,6 +47,10 @@ var (
 
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+
+	utilruntime.Must(mqttclient.AddToScheme(scheme))
+	utilruntime.Must(opcuaserver.AddToScheme(scheme))
+	utilruntime.Must(scenariotemplate.AddToScheme(scheme))
 
 	utilruntime.Must(orcav1beta1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme

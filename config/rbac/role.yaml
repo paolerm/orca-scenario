@@ -71,3 +71,17 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - orca.paermini.com
+  resources:
+  - scenariotemplates
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - orca.paermini.com
+  resources:
+  - scenariotemplates/status
+  verbs:
+  - get
