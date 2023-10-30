@@ -26,6 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"strconv"
 
 	mqttclient "github.com/paolerm/orca-mqtt-client/api/v1beta1"
 	opcuaserver "github.com/paolerm/orca-opcua-server/api/v1beta1"
@@ -239,6 +240,7 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 	// Add finalizer for this CR
 	if !controllerutil.ContainsFinalizer(scenario, scenarioFinalizer) {
+		logger.Info("Adding finalize to scenario CR...")
 		controllerutil.AddFinalizer(scenario, scenarioFinalizer)
 		err = r.Update(ctx, scenario)
 		if err != nil {
@@ -260,6 +262,7 @@ func (r *ScenarioReconciler) finalizeScenario(ctx context.Context, req ctrl.Requ
 	logger := log.FromContext(ctx)
 
 	// Cleanup OPCUA servers
+	logger.Info("Getting all OPCUA servers...")
 	opcuaServerList := &opcuaserver.OpcuaServerList{}
 	opts := []client.ListOption{
 		client.InNamespace(req.NamespacedName.Namespace),
@@ -272,6 +275,7 @@ func (r *ScenarioReconciler) finalizeScenario(ctx context.Context, req ctrl.Requ
 		return err
 	}
 
+	logger.Info("Found " + strconv.Itoa(len(opcuaServerList.Items)) + " OPCUA servers.")
 	for i := 0; i < len(opcuaServerList.Items); i++ {
 		opcuaToDelete := opcuaServerList.Items[i]
 		logger.Info("Deleting " + opcuaToDelete.ObjectMeta.Name + " OpcuaServerOperator CR...")
@@ -284,6 +288,7 @@ func (r *ScenarioReconciler) finalizeScenario(ctx context.Context, req ctrl.Requ
 	}
 
 	// Cleanup MQTT clients
+	logger.Info("Getting all MQTT clients...")
 	mqttClientList := &mqttclient.MqttClientList{}
 	err = r.List(ctx, mqttClientList, opts...)
 	if err != nil {
@@ -291,6 +296,7 @@ func (r *ScenarioReconciler) finalizeScenario(ctx context.Context, req ctrl.Requ
 		return err
 	}
 
+	logger.Info("Found " + strconv.Itoa(len(mqttClientList.Items)) + " MQTT clients.")
 	for i := 0; i < len(mqttClientList.Items); i++ {
 		mqttClientToDelete := mqttClientList.Items[i]
 		logger.Info("Deleting " + mqttClientToDelete.ObjectMeta.Name + " MqttClientOperator CR...")

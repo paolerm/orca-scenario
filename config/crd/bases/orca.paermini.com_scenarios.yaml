@@ -73,8 +73,6 @@ spec:
                           - id
                           type: object
                         type: array
-                    required:
-                    - opcuaOverrides
                     type: object
                   templateId:
                     type: string

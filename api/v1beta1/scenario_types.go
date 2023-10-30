@@ -38,7 +38,7 @@ type OpcuaOverrides struct {
 }
 
 type ScenarioOvverides struct {
-	OpcuaOverrides []OpcuaOverrides `json:"opcuaOverrides"`
+	OpcuaOverrides []OpcuaOverrides `json:"opcuaOverrides,omitempty"`
 }
 
 type ScenarioDefinition struct {
