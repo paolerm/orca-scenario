@@ -110,21 +110,23 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	for i := 0; i < len(scenarioTemplate.Spec.OpcuaSiteSpec); i++ {
 		opcuaSpec := scenarioTemplate.Spec.OpcuaSiteSpec[i]
 		opcuaName := scenario.Spec.Cluster.Id + "-" + scenario.Spec.ScenarioDefinition.TemplateId + "-" + opcuaSpec.Id
-		opcuaSpec.Id = opcuaName
 		opcuaNamespace := req.NamespacedName.Namespace
-
-		opcuaNamepsacedName := types.NamespacedName{
-			Name:      opcuaName,
-			Namespace: opcuaNamespace,
-		}
 
 		// apply overrides
 		overrideIndex := -1
 		if scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides != nil {
-			overrideIndex = Contains(scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides, opcuaName)
+			overrideIndex = Contains(scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides, opcuaSpec.Id)
+			logger.Info("Override index for scenario " + opcuaSpec.Id + " is equals to " + strconv.Itoa(overrideIndex))
 			if overrideIndex > -1 {
 				opcuaSpec = ApplyOpcuaOverrides(opcuaSpec, scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides[overrideIndex])
 			}
+		}
+
+		// update Id to include clusterId and templateId into the OPCUA CR name
+		opcuaSpec.Id = opcuaName
+		opcuaNamepsacedName := types.NamespacedName{
+			Name:      opcuaName,
+			Namespace: opcuaNamespace,
 		}
 
 		logger.Info("Getting opcua-server CR under namespace " + opcuaNamespace + " and name " + opcuaName + "...")
@@ -312,9 +314,9 @@ func (r *ScenarioReconciler) finalizeScenario(ctx context.Context, req ctrl.Requ
 	return nil
 }
 
-func Contains(s []orcav1beta1.OpcuaOverrides, name string) int {
+func Contains(s []orcav1beta1.OpcuaOverrides, id string) int {
 	for i, a := range s {
-		if a.Id == name {
+		if a.Id == id {
 			return i
 		}
 	}
