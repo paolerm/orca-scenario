@@ -115,7 +115,7 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		// apply overrides
 		overrideIndex := -1
 		if scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides != nil {
-			overrideIndex = Contains(scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides, opcuaSpec.Id)
+			overrideIndex = ContainsOpcuaOverride(scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides, opcuaSpec.Id)
 			logger.Info("Override index for scenario " + opcuaSpec.Id + " is equals to " + strconv.Itoa(overrideIndex))
 			if overrideIndex > -1 {
 				opcuaSpec = ApplyOpcuaOverrides(opcuaSpec, scenario.Spec.ScenarioDefinition.Overrides.OpcuaOverrides[overrideIndex])
@@ -179,12 +179,22 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		mqttClientName := scenario.Spec.Cluster.Id + "-" + scenario.Spec.ScenarioDefinition.TemplateId + "-" + mqttClientSpec.Id
 		mqttClientNamespace := req.NamespacedName.Namespace
 
+		// apply overrides
+		overrideIndex := -1
+		if scenario.Spec.ScenarioDefinition.Overrides.MqttClientOverrides != nil {
+			logger.Info("Looking for overrides. Spec ID: " + mqttClientSpec.Id + ". MqttClientOverrides size: " + strconv.Itoa(len(scenario.Spec.ScenarioDefinition.Overrides.MqttClientOverrides)))
+			overrideIndex = ContainsMqttClientOverride(scenario.Spec.ScenarioDefinition.Overrides.MqttClientOverrides, mqttClientSpec.Id)
+			logger.Info("OverrideIndex: " + strconv.Itoa(overrideIndex))
+			if overrideIndex > -1 {
+				mqttClientSpec = ApplyMqttClientOverrides(mqttClientSpec, scenario.Spec.ScenarioDefinition.Overrides.MqttClientOverrides[overrideIndex])
+			}
+		}
+
+		mqttClientSpec.Id = mqttClientName
 		mqttClientNamepsacedName := types.NamespacedName{
 			Name:      mqttClientName,
 			Namespace: mqttClientNamespace,
 		}
-
-		// TODO apply overrides (if any)
 
 		logger.Info("Getting MQTT client CR under namespace " + mqttClientNamespace + " and name " + mqttClientName + "...")
 		existingMqttClient := &mqttclient.MqttClient{}
@@ -201,9 +211,14 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 					},
 				},
 				Spec: mqttclient.MqttClientSpec{
-					Id:            mqttClientName,
-					Protocol:      mqttClientSpec.Protocol,
-					ClientConfigs: mqttClientSpec.ClientConfigs,
+					Id:                       mqttClientName,
+					HostName:                 mqttClientSpec.HostName,
+					Port:                     mqttClientSpec.Port,
+					ConnectionLimitPerSecond: mqttClientSpec.ConnectionLimitPerSecond,
+					SendingLimitPerSecond:    mqttClientSpec.SendingLimitPerSecond,
+					Protocol:                 mqttClientSpec.Protocol,
+					EnableTls:                mqttClientSpec.EnableTls,
+					ClientConfigs:            mqttClientSpec.ClientConfigs,
 				},
 			}
 
@@ -215,11 +230,7 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		} else {
 			logger.Info("Updating MQTT client CR under namespace " + mqttClientNamespace + " and name " + mqttClientName + "...")
 
-			existingMqttClient.Spec = mqttclient.MqttClientSpec{
-				Id:            mqttClientName,
-				Protocol:      mqttClientSpec.Protocol,
-				ClientConfigs: mqttClientSpec.ClientConfigs,
-			}
+			existingMqttClient.Spec = mqttClientSpec
 
 			err := r.Update(ctx, existingMqttClient)
 			if err != nil {
@@ -314,7 +325,16 @@ func (r *ScenarioReconciler) finalizeScenario(ctx context.Context, req ctrl.Requ
 	return nil
 }
 
-func Contains(s []orcav1beta1.OpcuaOverrides, id string) int {
+func ContainsOpcuaOverride(s []orcav1beta1.OpcuaOverrides, id string) int {
+	for i, a := range s {
+		if a.Id == id {
+			return i
+		}
+	}
+	return -1
+}
+
+func ContainsMqttClientOverride(s []orcav1beta1.MqttClientOverrides, id string) int {
 	for i, a := range s {
 		if a.Id == id {
 			return i
@@ -328,6 +348,7 @@ func ApplyOpcuaOverrides(spec opcuaserver.OpcuaServerSpec, overrides orcav1beta1
 
 	// TODO: use reflection instead?
 
+	// TODO: we should override default value to -1, otherwise there is no way to shut down all servers
 	if overrides.ServerCount != 0 {
 		result.ServerCount = overrides.ServerCount
 	}
@@ -355,6 +376,34 @@ func ApplyOpcuaOverrides(spec opcuaserver.OpcuaServerSpec, overrides orcav1beta1
 	if overrides.OpcuaServerLogLevel != "" {
 		result.OpcuaServerLogLevel = overrides.OpcuaServerLogLevel
 	}
+
+	return result
+}
+
+func ApplyMqttClientOverrides(spec mqttclient.MqttClientSpec, overrides orcav1beta1.MqttClientOverrides) mqttclient.MqttClientSpec {
+	result := spec
+
+	// TODO: use reflection instead?
+
+	if overrides.HostName != "" {
+		result.HostName = overrides.HostName
+	}
+	if overrides.Port != 0 {
+		result.Port = overrides.Port
+	}
+	if overrides.ConnectionLimitPerSecond != 0 {
+		result.ConnectionLimitPerSecond = overrides.ConnectionLimitPerSecond
+	}
+	if overrides.SendingLimitPerSecond != 0 {
+		result.SendingLimitPerSecond = overrides.SendingLimitPerSecond
+	}
+	if overrides.Protocol != "" {
+		result.Protocol = overrides.Protocol
+	}
+
+	// TODO: override EnableTls?
+
+	// TODO: override ClientConfigs?
 
 	return result
 }

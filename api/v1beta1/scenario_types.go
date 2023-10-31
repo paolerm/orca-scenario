@@ -17,6 +17,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	mqttclient "github.com/paolerm/orca-mqtt-client/api/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -37,8 +38,20 @@ type OpcuaOverrides struct {
 	OpcuaServerLogLevel      string `json:"opcuaServerLogLevel,omitempty"`
 }
 
+type MqttClientOverrides struct {
+	Id                       string                    `json:"id"`
+	HostName                 string                    `json:"hostName,omitempty"`
+	Port                     int                       `json:"port,omitempty"`
+	ConnectionLimitPerSecond int                       `json:"connectionLimitPerSecond,omitempty"`
+	SendingLimitPerSecond    int                       `json:"sendingLimitPerSecond,omitempty"`
+	Protocol                 string                    `json:"protocol,omitempty"`
+	EnableTls                bool                      `json:"enableTls,omitempty"`
+	ClientConfigs            []mqttclient.ClientConfig `json:"clientConfigs,omitempty"`
+}
+
 type ScenarioOvverides struct {
-	OpcuaOverrides []OpcuaOverrides `json:"opcuaOverrides,omitempty"`
+	OpcuaOverrides      []OpcuaOverrides      `json:"opcuaOverrides,omitempty"`
+	MqttClientOverrides []MqttClientOverrides `json:"mqttClientOverrides,omitempty"`
 }
 
 type ScenarioDefinition struct {
@@ -57,9 +70,7 @@ type ScenarioStatus struct {
 	OpcuaServerCr []string `json:"opcuaServerCr,omitempty"`
 	MqttClientCr  []string `json:"mqttClientCr,omitempty"`
 
-	// TODO: public IP addresses for each OPCUA
-
-	// TODO: MQTT Client IP
+	// TODO: public IP addresses for each OPCUA?
 }
 
 //+kubebuilder:object:root=true

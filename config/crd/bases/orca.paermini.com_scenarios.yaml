@@ -46,6 +46,60 @@ spec:
                 properties:
                   overrides:
                     properties:
+                      mqttClientOverrides:
+                        items:
+                          properties:
+                            clientConfigs:
+                              items:
+                                properties:
+                                  clientCount:
+                                    type: integer
+                                  clientModelId:
+                                    type: string
+                                  maxCpuLimits:
+                                    type: integer
+                                  maxMemoryLimits:
+                                    type: integer
+                                  messagePerHourPerClient:
+                                    type: integer
+                                  minCpuRequests:
+                                    type: integer
+                                  minMemoryRequests:
+                                    type: integer
+                                  publishQoS:
+                                    type: string
+                                  publishTopics:
+                                    items:
+                                      type: string
+                                    type: array
+                                  subscribeQoS:
+                                    type: string
+                                  subscribeTopics:
+                                    items:
+                                      type: string
+                                    type: array
+                                required:
+                                - clientCount
+                                type: object
+                              type: array
+                            connectionLimitPerSecond:
+                              type: integer
+                            enableTls:
+                              type: boolean
+                            hostName:
+                              type: string
+                            id:
+                              type: string
+                            port:
+                              type: integer
+                            protocol:
+                              type: string
+                            sendingLimitPerSecond:
+                              type: integer
+                          required:
+                          - id
+                          type: object
+                        type: array
                       opcuaOverrides:
                         items:
                           properties:
