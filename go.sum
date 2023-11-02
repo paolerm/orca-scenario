@@ -220,6 +220,8 @@ github.com/paolerm/orca-mqtt-client v0.0.0-20231026212200-bc043a34f6d3 h1:5ROPIb
 github.com/paolerm/orca-mqtt-client v0.0.0-20231026212200-bc043a34f6d3/go.mod h1:r8JQKev8vwrJARMYuwVVatOfZ6HOlfDXNW+hW+KqHPE=
 github.com/paolerm/orca-mqtt-client v0.0.0-20231027205024-9163a6775fef h1:MgfCVeDXeBNR6LJbBfKPEBqBYMseggclsHlV+lMRd+g=
 github.com/paolerm/orca-mqtt-client v0.0.0-20231027205024-9163a6775fef/go.mod h1:r8JQKev8vwrJARMYuwVVatOfZ6HOlfDXNW+hW+KqHPE=
+github.com/paolerm/orca-mqtt-client v0.0.0-20231101224132-f616363e984e h1:qs7c7YNYMZmkN7QJ1+Njj+pJlEEh3zzur1Ue/l5zBZs=
+github.com/paolerm/orca-mqtt-client v0.0.0-20231101224132-f616363e984e/go.mod h1:r8JQKev8vwrJARMYuwVVatOfZ6HOlfDXNW+hW+KqHPE=
 github.com/paolerm/orca-opcua-server v0.0.0-20231020182319-2fe52602b98f h1:26JV2Jkvp79sN825105d4uge3Evqzwak7aWyUHbPOnU=
 github.com/paolerm/orca-opcua-server v0.0.0-20231020182319-2fe52602b98f/go.mod h1:vrESNu6ZbRsU7BmBrdQ9txL89zX6jEC5aoudb6tUth4=
 github.com/paolerm/orca-opcua-server v0.0.0-20231026212031-91fe6396bae4 h1:IH9KJcyB/pEdzG1AB83HJae1oh8bACg9CDuAcB3SznM=

@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: paerminiacrplayground.azurecr.io/orca-scenario
-  newTag: v1.6.3
+  newTag: v1.7.0
