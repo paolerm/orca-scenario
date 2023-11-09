@@ -234,6 +234,10 @@ github.com/paolerm/orca-opcua-server v0.0.0-20231027202745-465af6b30b25 h1:kzDHT
 github.com/paolerm/orca-opcua-server v0.0.0-20231027202745-465af6b30b25/go.mod h1:PHn6cnwHoMknJZ2bq9W038g4o/DdsXN1cM27JZiT2Ls=
 github.com/paolerm/orca-opcua-server v0.0.0-20231108190530-e3177bc55f4b h1:NoIQ4w2TO+Jts4miWLqpYbnvDt8u7rRx0Ve7wfpAQYg=
 github.com/paolerm/orca-opcua-server v0.0.0-20231108190530-e3177bc55f4b/go.mod h1:PHn6cnwHoMknJZ2bq9W038g4o/DdsXN1cM27JZiT2Ls=
+github.com/paolerm/orca-opcua-server v0.0.1 h1:2X6MECtwzi9iRnLcHfwvT1cLWvxKWfGexb5T8WUokmc=
+github.com/paolerm/orca-opcua-server v0.0.1/go.mod h1:PHn6cnwHoMknJZ2bq9W038g4o/DdsXN1cM27JZiT2Ls=
+github.com/paolerm/orca-opcua-server v0.0.2 h1:zPvH6mXJ2278XAobBF6aaN/UsUXycKhTlzjiDdUkg64=
+github.com/paolerm/orca-opcua-server v0.0.2/go.mod h1:PHn6cnwHoMknJZ2bq9W038g4o/DdsXN1cM27JZiT2Ls=
 github.com/paolerm/orca-scenario-template v0.0.0-20231018223749-0a3237d71a0c h1:mhMwNTtB9rjhw8u/2FEAY4F3NYXnspIp05XUVES8HXs=
 github.com/paolerm/orca-scenario-template v0.0.0-20231018223749-0a3237d71a0c/go.mod h1:j4T7gWvDI78gzLwLap8jXcsFJFcMVztpqnvWYMVOpc4=
 github.com/paolerm/orca-scenario-template v0.0.0-20231025235431-b0beb7123b4a h1:kfYcgSFp9aU2auouKH7s1/epnKQZvDO5DguGbGUAw0k=
@@ -242,6 +246,8 @@ github.com/paolerm/orca-scenario-template v0.0.0-20231027205411-4ac261988256 h1:
 github.com/paolerm/orca-scenario-template v0.0.0-20231027205411-4ac261988256/go.mod h1:UtL6RXmb62ekkMPsZRq09lT/uIXAf1h94La7UldoydY=
 github.com/paolerm/orca-scenario-template v0.0.0-20231108192629-3e197a505b80 h1:bz/wMQML4WKQHatDmnZxcPK0q5cOYNXnw70vGhxDcfs=
 github.com/paolerm/orca-scenario-template v0.0.0-20231108192629-3e197a505b80/go.mod h1:7qYNXfoIo7eXLmklRRjfCG9P/jM7r8yOLe/Zrp7xfDM=
+github.com/paolerm/orca-scenario-template v0.0.2 h1:OIySjDlkAp9r2+LWS9bqGEWnVX2TsGf8LgsHZkFe+MQ=
+github.com/paolerm/orca-scenario-template v0.0.2/go.mod h1:Ngecs07Z2TkD/Ch6MEV1mVI45PgQEqKBwzLg1hH99To=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=

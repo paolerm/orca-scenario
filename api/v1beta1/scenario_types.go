@@ -26,16 +26,17 @@ type Cluster struct {
 }
 
 type OpcuaOverrides struct {
-	Id                       string `json:"id"`
-	ServerCount              int    `json:"serverCount,omitempty"`
-	AssetPerServer           int    `json:"assetPerServer,omitempty"`
-	TagCount                 int    `json:"tagCount,omitempty"`
-	AssetUpdateRatePerSecond int    `json:"assetUpdateRatePerSecond,omitempty"`
-	ChangeRateMs             int    `json:"changeRateMs,omitempty"`
-	SamplingIntervalMs       int    `json:"samplingIntervalMs,omitempty"`
-	DockerImageId            string `json:"dockerImageId,omitempty"`
-	LogLevel                 string `json:"logLevel,omitempty"`
-	OpcuaServerLogLevel      string `json:"opcuaServerLogLevel,omitempty"`
+	Id                  string `json:"id"`
+	ServerCount         int    `json:"serverCount,omitempty"`
+	AssetPerServer      int    `json:"assetPerServer,omitempty"`
+	TagCount            int    `json:"tagCount,omitempty"`
+	MaxSessionCount     int    `json:"maxSessionCount,omitempty"`
+	ChangeRateMs        int    `json:"changeRateMs,omitempty"`
+	SamplingIntervalMs  int    `json:"samplingIntervalMs,omitempty"`
+	DockerImageId       string `json:"dockerImageId,omitempty"`
+	LogLevel            string `json:"logLevel,omitempty"`
+	OpcuaServerLogLevel string `json:"opcuaServerLogLevel,omitempty"`
+	ServiceIp           string `json:"serviceIp,omitempty"`
 }
 
 type MqttClientOverrides struct {

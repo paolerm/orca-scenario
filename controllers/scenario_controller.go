@@ -144,13 +144,14 @@ func (r *ScenarioReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 					},
 				},
 				Spec: opcuaserver.OpcuaServerSpec{
-					Id:                       opcuaName,
-					ServerCount:              opcuaSpec.ServerCount,
-					AssetPerServer:           opcuaSpec.AssetPerServer,
-					TagCount:                 opcuaSpec.TagCount,
-					AssetUpdateRatePerSecond: opcuaSpec.AssetUpdateRatePerSecond,
-					SamplingIntervalMs:       opcuaSpec.SamplingIntervalMs,
-					DockerImageId:            opcuaSpec.DockerImageId,
+					Id:                 opcuaName,
+					ServerCount:        opcuaSpec.ServerCount,
+					AssetPerServer:     opcuaSpec.AssetPerServer,
+					TagCount:           opcuaSpec.TagCount,
+					MaxSessionCount:    opcuaSpec.MaxSessionCount,
+					SamplingIntervalMs: opcuaSpec.SamplingIntervalMs,
+					DockerImageId:      opcuaSpec.DockerImageId,
+					ServiceIp:          opcuaSpec.ServiceIp,
 				},
 			}
 
@@ -358,8 +359,8 @@ func ApplyOpcuaOverrides(spec opcuaserver.OpcuaServerSpec, overrides orcav1beta1
 	if overrides.TagCount != 0 {
 		result.TagCount = overrides.TagCount
 	}
-	if overrides.AssetUpdateRatePerSecond != 0 {
-		result.AssetUpdateRatePerSecond = overrides.AssetUpdateRatePerSecond
+	if overrides.MaxSessionCount != 0 {
+		result.MaxSessionCount = overrides.MaxSessionCount
 	}
 	if overrides.ChangeRateMs != 0 {
 		result.ChangeRateMs = overrides.ChangeRateMs
@@ -375,6 +376,9 @@ func ApplyOpcuaOverrides(spec opcuaserver.OpcuaServerSpec, overrides orcav1beta1
 	}
 	if overrides.OpcuaServerLogLevel != "" {
 		result.OpcuaServerLogLevel = overrides.OpcuaServerLogLevel
+	}
+	if overrides.ServiceIp != "" {
+		result.ServiceIp = overrides.ServiceIp
 	}
 
 	return result
