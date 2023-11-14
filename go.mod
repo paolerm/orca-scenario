@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
-	github.com/paolerm/orca-mqtt-client v0.0.0-20231107222452-11aed4e7a576
+	github.com/paolerm/orca-mqtt-client v0.0.1
 	github.com/paolerm/orca-opcua-server v0.0.2
 	github.com/paolerm/orca-scenario-template v0.0.2
 	k8s.io/apimachinery v0.26.0

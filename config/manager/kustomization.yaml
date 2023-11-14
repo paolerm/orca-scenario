@@ -4,5 +4,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: oneedgeorca.azurecr.io/orca-scenario
+  newName: paerminiacrplayground.azurecr.io/orca-scenario
   newTag: v0.0.1
